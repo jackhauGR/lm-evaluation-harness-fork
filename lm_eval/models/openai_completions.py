@@ -4,6 +4,7 @@ import copy
 import json  # for saving results to a jsonl file
 import logging  # for logging rate limit warnings and other messages
 import os
+from pathlib import Path
 import re  # for matching endpoint from request URL
 import signal
 import tempfile
@@ -745,6 +746,7 @@ class OpenaiChatCompletionsLM(LM):
         model: str = "gpt-3.5-turbo",  # GPT model or Local model using HuggingFace model paths
         base_url: str = None,
         truncate: bool = False,
+        token_counter_loc: str = "TOKEN_COUNTER.json",
         **kwargs,
     ) -> None:
         """
@@ -769,6 +771,7 @@ class OpenaiChatCompletionsLM(LM):
         self.model = model
         self.base_url = base_url
         self.truncate = truncate
+        self.token_counter = Path(token_counter_loc)
 
         # Read from environment variable OPENAI_API_KEY
         # Set to EMPTY for local
@@ -1022,17 +1025,19 @@ class OpenaiChatCompletionsLM(LM):
             clean_up_requests()
             final_responses = [s for idx, s in results]
 
-            cwd = os.getcwd()
+<<<<<<< Updated upstream
+=======
+            if self.token_counter.exists:
+                with open(self.token_counter, "r+") as f:
+                    token_counter = json.load(f)
+                    total_input_toks = int(token_counter["input_toks"]) + input_toks
+                    total_output_toks = int(token_counter["output_toks"]) + output_toks
+                    print(total_input_toks, total_output_toks)
+                    f.seek(0)
+                    f.truncate()
+                    f.write(json.dumps({"input_toks": total_input_toks, "output_toks": total_output_toks}))
 
-            with open("TOKEN_COUNTER.json", "r+") as f:
-                token_counter = json.load(f)
-                total_input_toks = int(token_counter["input_toks"]) + input_toks
-                total_output_toks = int(token_counter["output_toks"]) + output_toks
-                print(total_input_toks, total_output_toks)
-                f.seek(0)
-                f.truncate()
-                f.write(json.dumps({"input_toks": total_input_toks, "output_toks": total_output_toks}))
-
+>>>>>>> Stashed changes
         return final_responses
 
     def loglikelihood(self, requests):
