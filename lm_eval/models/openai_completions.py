@@ -1025,8 +1025,6 @@ class OpenaiChatCompletionsLM(LM):
             clean_up_requests()
             final_responses = [s for idx, s in results]
 
-<<<<<<< Updated upstream
-=======
             if self.token_counter.exists:
                 with open(self.token_counter, "r+") as f:
                     token_counter = json.load(f)
@@ -1037,7 +1035,6 @@ class OpenaiChatCompletionsLM(LM):
                     f.truncate()
                     f.write(json.dumps({"input_toks": total_input_toks, "output_toks": total_output_toks}))
 
->>>>>>> Stashed changes
         return final_responses
 
     def loglikelihood(self, requests):
