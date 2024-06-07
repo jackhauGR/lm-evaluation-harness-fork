@@ -991,12 +991,19 @@ class OpenaiChatCompletionsLM(LM):
             with open(responses_file_path, "r") as responses_temp_file:
                 lines = responses_temp_file.readlines()
 
+
+            input_toks = 0
+            output_toks = 0
+
             results = []
             for line in lines:
                 response_object = json.loads(line)
                 context = response_object[0]["messages"][0]["content"]
                 response = response_object[1]["choices"]
                 idx = response_object[2]["idx"]
+
+                input_toks += int(response_object[1]["usage"]["prompt_tokens"])
+                output_toks += int(response_object[1]["usage"]["completion_tokens"])
 
                 for resp in response:
                     s = resp["message"]["content"]
@@ -1014,7 +1021,6 @@ class OpenaiChatCompletionsLM(LM):
                     pbar.update(1)
 
             results.sort(key=lambda x: x[0])
-
             pbar.close()
             clean_up_requests()
             final_responses = [s for idx, s in results]
