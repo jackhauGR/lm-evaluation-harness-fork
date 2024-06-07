@@ -468,8 +468,9 @@ class CohereChatLM(LM):
                 tokenizer_url = model_info.json()["tokenizer_url"]
                 break
             else:
+                retry_tokenizer -= 1
                 eval_logger.info("ahhhhh")
-                eval_logger.info(str(model_info.status_code))
+                eval_logger.warning(str(model_info.status_code))
                 eval_logger.info(json.dumps(model_info.json(), indent=2))
                 time.sleep(5)
 
