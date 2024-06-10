@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any, List, Tuple
 
 from tqdm import tqdm
@@ -6,6 +7,16 @@ from lm_eval import utils
 from lm_eval.api.model import LM
 from lm_eval.api.registry import register_model
 from lm_eval.models.utils import retry_on_specific_exceptions
+
+import asyncio
+import atexit
+import json
+import logging
+import os
+import tempfile
+import time
+
+from dataclasses import dataclass, field
 
 
 eval_logger = utils.eval_logger
@@ -280,6 +291,7 @@ class AnthropicChatLM(AnthropicLM):
         batch_size: int = 1,
         max_tokens: int = 256,
         temperature: float = 0,  # defaults to 1
+        token_counter_loc: str = "TOKEN_COUNTER.json",
         **kwargs,  # top_p, top_k, etc.
     ) -> None:
         """Anthropic API wrapper.
@@ -310,6 +322,7 @@ please install anthropic via `pip install 'lm-eval[anthropic]'` or `pip install 
         self.max_token = max_tokens
         self.tokenizer = self.client.get_tokenizer()
         self.kwargs = kwargs
+        self.token_couter = Path(token_counter_loc)
 
     @property
     def max_gen_toks(self) -> int:
