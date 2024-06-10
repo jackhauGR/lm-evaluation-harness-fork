@@ -12,6 +12,7 @@ from . import (
     textsynth,
     vllm_causallms,
     cohere_llms,
+    google_llms
 )
 
 
