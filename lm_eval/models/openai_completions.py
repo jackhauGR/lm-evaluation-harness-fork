@@ -117,6 +117,10 @@ async def process_api_requests_from_file(
                             # if file runs out, set flag to stop reading it
                             logging.debug("Read file exhausted")
                             file_not_finished = False
+                        except json.decoder.JSONDecodeError as e:
+                            logging.error("Json decode error")
+                            logging.error(e)
+
 
                 # update available capacity
                 current_time = time.time()
@@ -458,7 +462,7 @@ class OpenaiCompletionsLM(LM):
         tokenizer: Optional[str] = None,
         tokenizer_backend: Literal["tiktoken", "huggingface"] = "tiktoken",
         truncate: bool = False,
-        max_gen_toks: int = 256,
+        max_gen_toks: int = 4096,
         batch_size: int = 1,
         seed: int = 1234,
         max_length: Optional[int] = None,
@@ -787,7 +791,7 @@ class OpenaiChatCompletionsLM(LM):
 
     @property
     def max_gen_toks(self) -> int:
-        return 256
+        return 4096
 
     @property
     def batch_size(self):
